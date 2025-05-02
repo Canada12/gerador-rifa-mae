@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rifa Digital Dia das Mães</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+    <script>
+        function gerarRifa() {
+            const nomePremio = document.getElementById("nomePremio").value;
+            const descricaoPremio = document.getElementById("descricaoPremio").value;
+            const valorNumero = document.getElementById("valorNumero").value;
+            const dataSorteio = document.getElementById("dataSorteio").value;
+            const quantidadeNumeros = parseInt(document.getElementById("quantidadeNumeros").value, 10);
+            const imagemPremioInput = document.getElementById("imagemPremio");
+            const mensagemMae = document.getElementById("mensagemMae").value;
+            const chavePix = document.getElementById("chavePix").value;
+            const nomeParticipante = document.getElementById("nomeParticipante").value; // Novo campo
+
+
+            if (!nomePremio || !descricaoPremio || !valorNumero || !dataSorteio || isNaN(quantidadeNumeros) || quantidadeNumeros <= 0) {
+                alert("Por favor, preencha todos os campos corretamente.");
+                return;
+            }
+
+            let numerosHtml = '<div class="grid grid-cols-2 sm:grid-cols-5 md:grid-cols-10 gap-2 p-4">';
+            for (let i = 1; i <= quantidadeNumeros; i++) {
+                const numeroFormatado = String(i).padStart(2, '0');
+                numerosHtml += `<div class="flex items-center justify-center rounded-md border border-gray-300 shadow-sm h-10 bg-white text-gray-700 font-medium text-sm">
+                                    <span id="numero-${i}">${numeroFormatado}</span>
+                                </div>`;
+            }
+            numerosHtml += '</div>';
+
+            const rifaDiv = document.getElementById("rifa");
+            let imagemHtml = '';
+            if (imagemPremioInput.files && imagemPremioInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagemHtml = `<div class="mb-4">
+                                    <img src="${e.target.result}" alt="Prêmio da Rifa" class="rounded-md max-w-full h-auto">
+                                </div>`;
+                    atualizarRifaHtml(rifaDiv, imagemHtml, nomePremio, descricaoPremio, valorNumero, dataSorteio, numerosHtml, mensagemMae, chavePix, nomeParticipante); // Passa nomeParticipante
+                };
+                reader.readAsDataURL(imagemPremioInput.files[0]);
+            } else {
+                atualizarRifaHtml(rifaDiv, imagemHtml, nomePremio, descricaoPremio, valorNumero, dataSorteio, numerosHtml, mensagemMae, chavePix, nomeParticipante); // Passa nomeParticipante
+            }
+        }
+
+        function atualizarRifaHtml(rifaDiv, imagemHtml, nomePremio, descricaoPremio, valorNumero, dataSorteio, numerosHtml, mensagemMae, chavePix, nomeParticipante) { // Adiciona nomeParticipante
+            let mensagemHtml = '';
+            if (mensagemMae) {
+                mensagemHtml = `<div class="mt-4 p-4 bg-purple-100 border-l-4 border-purple-500 text-purple-700 rounded-md">
+                                    <strong class="font-semibold">Mensagem para a Mamãe:</strong>
+                                    <p class="font-italic">${mensagemMae}</p>
+                                </div>`;
+            }
+            let pixHtml = '';
+            if (chavePix) {
+                pixHtml = `<div class="mt-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded-md">
+                                <strong class="font-bold">Chave Pix:</strong><br> ${chavePix} <br>
+                                <strong class="font-bold">Instruções:</strong> Copie a chave Pix, faça o pagamento e envie o comprovante junto com os números escolhidos e seu nome completo para o WhatsApp abaixo.
+                            </div>`;
+            }
+            let participanteHtml = '';
+            if(nomeParticipante){
+                participanteHtml = `<p class="text-gray-700 mb-2"><span class="font-semibold">Nome Completo:</span> ${nomeParticipante}</p>`;
+            }
+
+            rifaDiv.innerHTML = `
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-semibold text-indigo-600 mb-4">Rifa de Dia das Mães</h2>
+                    ${imagemHtml}
+                    <p class="text-gray-700 mb-2"><span class="font-semibold">Prêmio:</span> ${nomePremio}</p>
+                    <p class="text-gray-700 mb-4">${descricaoPremio}</p>
+                    <p class="text-gray-700 mb-2"><span class="font-semibold">Valor por Número:</span> R$ ${valorNumero}</p>
+                    <p class="text-gray-700 mb-4"><span class="font-semibold">Data do Sorteio:</span> ${dataSorteio}</p>
+                    ${participanteHtml}
+                    <div class="mt-4">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Números Disponíveis:</h3>
+                        ${numerosHtml}
+                    </div>
+                    ${mensagemHtml}
+                    ${pixHtml}
+                    <div class="mt-6">
+                        <p class="text-gray-700">Para participar, entre em contato pelo WhatsApp: <a href="https://wa.me/SEUNUMERO" target="_blank" class="text-blue-600 hover:text-blue-800 font-semibold">SEU NÚMERO DE WHATSAPP</a></p>
+                    </div>
+                </div>
+            `;
+
+
+            document.getElementById("rifa-container").classList.remove("hidden");
+        }
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center py-10">
+    <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-2xl">
+        <h1 class="text-2xl font-semibold text-indigo-600 mb-6 text-center">Gerador de Rifa Digital para o Dia das Mães</h1>
+
+        <div class="mb-4">
+            <label for="nomePremio" class="block text-gray-700 text-sm font-bold mb-2">Prêmio:</label>
+            <input type="text" id="nomePremio" placeholder="Ex: Cesta de Café da Manhã" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div class="mb-4">
+            <label for="descricaoPremio" class="block text-gray-700 text-sm font-bold mb-2">Descrição do Prêmio:</label>
+            <textarea id="descricaoPremio" placeholder="Ex: Cesta com pães, frutas, queijos, etc." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label for="imagemPremio" class="block text-gray-700 text-sm font-bold mb-2">Imagem do Prêmio:</label>
+            <input type="file" id="imagemPremio" accept="image/*" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div class="mb-4">
+            <label for="valorNumero" class="block text-gray-700 text-sm font-bold mb-2">Valor por Número (R$):</label>
+            <input type="number" id="valorNumero" min="0.01" step="0.01" placeholder="Ex: 10.00" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div class="mb-4">
+            <label for="dataSorteio" class="block text-gray-700 text-sm font-bold mb-2">Data do Sorteio:</label>
+            <input type="date" id="dataSorteio" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div class="mb-4">
+            <label for="quantidadeNumeros" class="block text-gray-700 text-sm font-bold mb-2">Quantidade de Números:</label>
+            <input type="number" id="quantidadeNumeros" value="50" min="1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div class="mb-4">
+            <label for="mensagemMae" class="block text-gray-700 text-sm font-bold mb-2">Mensagem para a Mamãe:</label>
+            <textarea id="mensagemMae" placeholder="Digite sua mensagem para a mamãe que ganhar a rifa..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label for="chavePix" class="block text-gray-700 text-sm font-bold mb-2">Chave Pix:</label>
+            <input type="text" id="chavePix" placeholder="Ex: 00.000.000-00" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div class="mb-4">
+            <label for="nomeParticipante" class="block text-gray-700 text-sm font-bold mb-2">Nome Completo:</label>
+            <input type="text" id="nomeParticipante" placeholder="Ex: João da Silva" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <button onclick="gerarRifa()" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Gerar Rifa</button>
+
+        <div id="rifa-container" class="mt-8 hidden">
+            <h2 class="text-2xl font-semibold text-indigo-600 mb-4 text-center">Preview da Rifa</h2>
+            <div id="rifa">
+                </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('dataSorteio').valueAsDate = new Date();
+    </script>
+</body>
+</html>
